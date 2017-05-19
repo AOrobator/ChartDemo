@@ -30,7 +30,7 @@ public class CircleGraphStyleKit {
     private static class GlobalCache {
         static PorterDuffXfermode blendModeDestinationIn = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
     }
-    
+
     // Resizing Behavior
     public enum ResizingBehavior {
         AspectFit, //!< The content is proportionally resized to fit into the target rectangle.
@@ -38,12 +38,12 @@ public class CircleGraphStyleKit {
         Stretch, //!< The content is stretched to match the entire target rectangle.
         Center, //!< The content is centered in the target rectangle, but it is NOT resized.
     }
-    
+
     // In Trial version of PaintCode, the code generation is limited to 3 canvases.
-    
+
     // Canvas Drawings
     // Tab
-    
+
     private static class CacheForCanvas1 {
         private static Paint paint = new Paint();
         private static PaintCodeGradient gradient = null;
@@ -56,50 +56,50 @@ public class CircleGraphStyleKit {
         private static Path maskOvalPath = new Path();
         private static PaintCodeDashPathEffect maskOvalPathDashEffect = new PaintCodeDashPathEffect();
     }
-    
+
     public static void drawCanvas1(Canvas canvas, float colorFraction) {
         CircleGraphStyleKit.drawCanvas1(canvas, new RectF(0f, 0f, 240f, 240f), ResizingBehavior.AspectFit, colorFraction);
     }
-    
+
     public static void drawCanvas1(Canvas canvas, RectF targetFrame, ResizingBehavior resizing, float colorFraction) {
         // General Declarations
         Stack<Matrix> currentTransformation = new Stack<Matrix>();
         currentTransformation.push(new Matrix());
         Paint paint = CacheForCanvas1.paint;
-        
+
         // Local Colors
         int color3 = Color.argb(255, 0, 0, 0);
-        
+
         // Local Gradients
         if (CacheForCanvas1.gradient == null)
             CacheForCanvas1.gradient = new PaintCodeGradient(new int[]{Color.BLUE, Color.RED}, new float[]{0f, 1f});
         PaintCodeGradient gradient = CacheForCanvas1.gradient;
-        
+
         // Local Variables
         float colorDash = 475f * colorFraction;
-        
+
         // Resize to Target Frame
         canvas.save();
         RectF resizedFrame = CacheForCanvas1.resizedFrame;
         CircleGraphStyleKit.resizingBehaviorApply(resizing, CacheForCanvas1.originalFrame, targetFrame, resizedFrame);
         canvas.translate(resizedFrame.left, resizedFrame.top);
         canvas.scale(resizedFrame.width() / 240f, resizedFrame.height() / 240f);
-        
+
         // ColorOval
         RectF colorOvalRect = CacheForCanvas1.colorOvalRect;
-        colorOvalRect.set(16f, 16f, 224f, 224f);
+        colorOvalRect.set(40f, 42f, 197f, 199f);
         Path colorOvalPath = CacheForCanvas1.colorOvalPath;
         colorOvalPath.reset();
         colorOvalPath.addOval(colorOvalRect, Path.Direction.CW);
-        
+
         paint.reset();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.FILL);
         paint.setShader(CacheForCanvas1.colorOvalPathGradient.get(gradient, 140.57f, 98.83f, 79.06f, 107.66f));
         canvas.drawPath(colorOvalPath, paint);
-        
+
         // MaskOval
-        
+
         paint.reset();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         paint.setXfermode(GlobalCache.blendModeDestinationIn);
@@ -119,7 +119,7 @@ public class CircleGraphStyleKit {
             maskOvalPath.cubicTo(-75f, -42.42f, -41.42f, -76f, 0f, -76f);
             maskOvalPath.cubicTo(41.42f, -76f, 75f, -42.42f, 75f, -1f);
             maskOvalPath.close();
-            
+
             paint.reset();
             paint.setFlags(Paint.ANTI_ALIAS_FLAG);
             paint.setStrokeWidth(6f);
@@ -133,27 +133,27 @@ public class CircleGraphStyleKit {
             canvas.restore();
         }
         canvas.restore();
-        
+
         canvas.restore();
     }
-    
-    
+
+
     // Resizing Behavior
     public static void resizingBehaviorApply(ResizingBehavior behavior, RectF rect, RectF target, RectF result) {
         if (rect.equals(target) || target == null) {
             result.set(rect);
             return;
         }
-        
+
         if (behavior == ResizingBehavior.Stretch) {
             result.set(target);
             return;
         }
-        
+
         float xRatio = Math.abs(target.width() / rect.width());
         float yRatio = Math.abs(target.height() / rect.height());
         float scale = 0f;
-        
+
         switch (behavior) {
             case AspectFit: {
                 scale = Math.min(xRatio, yRatio);
@@ -168,7 +168,7 @@ public class CircleGraphStyleKit {
                 break;
             }
         }
-        
+
         float newWidth = Math.abs(rect.width() * scale);
         float newHeight = Math.abs(rect.height() * scale);
         result.set(target.centerX() - newWidth / 2,
@@ -176,14 +176,14 @@ public class CircleGraphStyleKit {
             target.centerX() + newWidth / 2,
             target.centerY() + newHeight / 2);
     }
-    
-    
+
+
 }
 
 class PaintCodeGradient {
     private int[] colors;
     private float[] positions;
-    
+
     public PaintCodeGradient(int[] colors, float[] positions) {
         if (positions == null) {
             int steps = colors.length;
@@ -191,40 +191,40 @@ class PaintCodeGradient {
             for (int i = 0; i < steps; i++)
                 positions[i] = (float) i / (steps - 1);
         }
-        
+
         this.colors = colors;
         this.positions = positions;
     }
-    
+
     public LinearGradient linearGradient(float x0, float y0, float x1, float y1) {
         return new LinearGradient(x0, y0, x1, y1, this.colors, this.positions, Shader.TileMode.CLAMP);
     }
-    
+
     public RadialGradient radialGradient(float startX, float startY, float startRadius, float endX, float endY, float endRadius) {
         int steps = this.colors.length;
         float[] positions = new float[steps];
-        
+
         if (startRadius > endRadius) {
             float ratio = endRadius / startRadius;
             int[] colors = new int[steps];
-            
+
             for (int i = 0; i < steps; i++) {
                 colors[i] = this.colors[steps - i - 1];
                 positions[i] = (1 - this.positions[steps - i - 1]) * (1 - ratio) + ratio;
             }
-            
+
             return new RadialGradient(endX, endY, startRadius, colors, positions, Shader.TileMode.CLAMP);
         } else {
             float ratio = startRadius / endRadius;
-            
+
             for (int i = 0; i < steps; i++) {
                 positions[i] = this.positions[i] * (1 - ratio) + ratio;
             }
-            
+
             return new RadialGradient(startX, startY, endRadius, this.colors, positions, Shader.TileMode.CLAMP);
         }
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PaintCodeGradient))
@@ -256,7 +256,7 @@ class PaintCodeLinearGradient {
 class PaintCodeDashPathEffect {
     private DashPathEffect effect;
     private float dash, gap, phase;
-    
+
     DashPathEffect get(float dash, float gap, float phase) {
         if (this.dash != dash || this.gap != gap || this.phase != phase) {
             this.dash = dash;
