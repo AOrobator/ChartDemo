@@ -38,6 +38,6 @@ class GraphChooserActivity : AppCompatActivity() {
     val navigation = findViewById(R.id.navigation) as BottomNavigationView
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-    selectFragment(DataHistoryGraphFragment())
+    selectFragment(CircleGraphFragment())
   }
 }

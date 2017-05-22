@@ -16,13 +16,15 @@ class CircleGraphFragment : Fragment() {
       savedInstanceState: Bundle?): View? {
     val view = inflater.inflate(R.layout.fragment_circle_graph, container, false)
 
-    val circleGraphView = view.findViewById(R.id.circle_graph) as CircleGraphView
+    val circleGraphView = view.findViewById(
+        R.id.donut_progress) as DonutProgress
+
 
     val seekBar = view.findViewById(R.id.seek_bar) as SeekBar
     seekBar.max = 100
     seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
       override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        circleGraphView.setFraction(progress / 100f)
+        circleGraphView.setDonut_progress("$progress")
       }
 
       override fun onStartTrackingTouch(seekBar: SeekBar?) {}
